@@ -14,12 +14,12 @@ const assert = require('assert');
 
 class MultitenancyBindService extends BaseService {
 
-  constructor(guid, plan, parameters, agent, bindResourceType, deploymentResourceType) {
+  constructor(guid, plan, parameters, bindResourceType, deploymentResourceType) {
     super(plan);
     this.guid = guid;
     this.parameters = parameters;
     this.director = bosh.director;
-    this.agent = agent;
+    this.agent = new MultitenancyAgent(this.settings.agent);
     this.bindResourceType = bindResourceType;
     this.deploymentResourceType = deploymentResourceType;
   }
@@ -106,8 +106,7 @@ class MultitenancyBindService extends BaseService {
     const planId = options.plan_id;
     const plan = catalog.getPlan(planId);
     const parameters = _.get(options, 'parameters');
-    const agent = new MultitenancyAgent(plan.manager.settings);
-    const multitenancyBindService = new MultitenancyBindService(instanceId, plan, parameters, agent, bindResourceType, deploymentResourceType);
+    const multitenancyBindService = new MultitenancyBindService(instanceId, plan, parameters, bindResourceType, deploymentResourceType);
     return Promise.resolve(multitenancyBindService);
   }
 }
