@@ -401,6 +401,9 @@ module.exports = Object.freeze({
   NETWORK_MANAGER: {
     NETWORK_ID: 'SF'
   },
+  MULTITENANCY_SERVICE_TYPE: {
+    MULTITENANCYSERVICE: 'multitenancyService'
+  },
   SERVICE_FLOW: {
     DEFINITION_FILE_NAME: 'serial-serviceflow-definition.yml',
     TYPE: {

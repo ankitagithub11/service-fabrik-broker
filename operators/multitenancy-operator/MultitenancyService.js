@@ -16,7 +16,7 @@ const MultitenancyAgent = require('./MultitenancyAgent');
 const eventmesh = require('../../data-access-layer/eventmesh');
 
 class MultitenancyService extends BaseService {
-  constructor(guid, spaceId, plan, parameters, resourceType) {
+  constructor(guid, spaceId, plan, parameters, agent, resourceType) {
     super(plan);
     this.guid = guid;
     this.spaceId = spaceId;
@@ -24,7 +24,7 @@ class MultitenancyService extends BaseService {
     this.director = bosh.director;
     this.cloudController = cf.cloudController;
     this.resourceType = resourceType;
-    this.agent = new MultitenancyAgent(this.settings.agent);
+    this.agent = agent;
   }
 
   initialize(operation) {
@@ -104,7 +104,8 @@ class MultitenancyService extends BaseService {
     const plan = catalog.getPlan(planId);
     const spaceId = _.get(options, 'context.space_guid');
     const parameters = _.get(options, 'parameters');
-    const multitenancyService = new MultitenancyService(instanceId, spaceId, plan, parameters, resourceType);
+    const agent = new MultitenancyAgent(plan.manager.settings);
+    const multitenancyService = new MultitenancyService(instanceId, spaceId, plan, parameters, agent, resourceType);
     return Promise.resolve(multitenancyService);
   }
 }

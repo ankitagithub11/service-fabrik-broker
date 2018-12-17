@@ -7,15 +7,17 @@ const logger = require('../../common/logger');
 const utils = require('../../common/utils');
 const CONST = require('../../common/constants');
 const BaseOperator = require('../BaseOperator');
-const MultitenancyService = require('./MultitenancyService');
+const ServiceType = require('./ServiceType');
 const errors = require('../../common/errors');
 const Gone = errors.Gone;
 
 class MultitenancyOperator extends BaseOperator {
 
-  constructor(resourceType) {
+  constructor(resourceType, serviceType) {
     super();
+    this.serviceType = serviceType;
     this.resourceType = resourceType;
+
   }
 
   init() {
@@ -57,7 +59,8 @@ class MultitenancyOperator extends BaseOperator {
     assert.ok(changeObjectBody.spec.options, `Argument 'spec.options' is required to process the request`);
     const changedOptions = JSON.parse(changeObjectBody.spec.options);
     logger.info(`Triggering create of resource '${this.resourceType}' with the following options: '${JSON.stringify(changedOptions)}`);
-    return MultitenancyService.createInstance(changeObjectBody.metadata.name, changedOptions, this.resourceType)
+    const multitenancyService = ServiceType.getService(this.serviceType);
+    return multitenancyService.createInstance(changeObjectBody.metadata.name, changedOptions, this.resourceType)
       .then(multitenancyService => multitenancyService.create())
       .then(response => eventmesh.apiServerClient.updateResource({
         resourceGroup: CONST.APISERVER.RESOURCE_GROUPS.DEPLOYMENT,
@@ -75,7 +78,8 @@ class MultitenancyOperator extends BaseOperator {
     assert.ok(changeObjectBody.spec.options, `Argument 'spec.options' is required to process the request`);
     const changedOptions = JSON.parse(changeObjectBody.spec.options);
     logger.info(`Triggering delete of resource:'${this.resourceType}' with the following options: '${JSON.stringify(changedOptions)}`);
-    return MultitenancyService.createInstance(changeObjectBody.metadata.name, changedOptions, this.resourceType)
+    const multitenancyService = ServiceType.getService(this.serviceType);
+    return multitenancyService.createInstance(changeObjectBody.metadata.name, changedOptions, this.resourceType)
       .then(multitenancyService => multitenancyService.delete(changeObjectBody))
       .then(() => eventmesh.apiServerClient.deleteResource({
         resourceGroup: CONST.APISERVER.RESOURCE_GROUPS.DEPLOYMENT,
@@ -94,7 +98,8 @@ class MultitenancyOperator extends BaseOperator {
     assert.ok(changeObjectBody.spec.options, `Argument 'spec.options' is required to process the request`);
     const changedOptions = JSON.parse(changeObjectBody.spec.options);
     logger.info(`Triggering update of resource:'${this.resourceType}' with the following options: '${JSON.stringify(changedOptions)}`);
-    return MultitenancyService.createMultitenancyService(changeObjectBody.metadata.name, changedOptions, this.resourceType)
+    const multitenancyService = ServiceType.getService(this.serviceType);
+    return multitenancyService.createInstance(changeObjectBody.metadata.name, changedOptions, this.resourceType)
       .then(multitenancyService => multitenancyService.update(changeObjectBody))
       .then(response => eventmesh.apiServerClient.updateResource({
         resourceGroup: CONST.APISERVER.RESOURCE_GROUPS.DEPLOYMENT,
