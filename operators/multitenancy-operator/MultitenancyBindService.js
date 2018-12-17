@@ -13,15 +13,15 @@ const eventmesh = require('../../data-access-layer/eventmesh');
 const assert = require('assert');
 
 class MultitenancyBindService extends BaseService {
+
   constructor(guid, plan, parameters, agent, bindResourceType, deploymentResourceType) {
     super(plan);
     this.guid = guid;
     this.parameters = parameters;
     this.director = bosh.director;
+    this.agent = agent;
     this.bindResourceType = bindResourceType;
     this.deploymentResourceType = deploymentResourceType;
-    this.agent = agent;
-    // this.agent = new MultitenancyAgent(this.settings.agent);
   }
 
 

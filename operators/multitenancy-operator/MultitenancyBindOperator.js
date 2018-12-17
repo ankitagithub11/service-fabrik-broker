@@ -7,7 +7,7 @@ const logger = require('../../common/logger');
 const utils = require('../../common/utils');
 const CONST = require('../../common/constants');
 const BaseOperator = require('../BaseOperator');
-const ServiceType = require('./ServiceType');
+const MTServiceFabrik = require('./MTServiceFabrik');
 const assert = require('assert');
 
 class MultitenancyBindOperator extends BaseOperator {
@@ -53,7 +53,7 @@ class MultitenancyBindOperator extends BaseOperator {
     const changedOptions = JSON.parse(changeObjectBody.spec.options);
     const instance_guid = _.get(changeObjectBody, 'metadata.labels.instance_guid');
     logger.info(`Triggering bind of resource: '${this.bindResourceType}' with the following options: '${JSON.stringify(changedOptions)}`);
-    const multitenancyBindService = ServiceType.getService(this.serviceType);
+    const multitenancyBindService = MTServiceFabrik.getService(this.serviceType);
     return multitenancyBindService.createInstance(instance_guid, changedOptions, this.bindResourceType, this.deploymentResourceType)
       .then(multitenancyBindService => multitenancyBindService.bind(changedOptions))
       .then(response => {
@@ -76,7 +76,7 @@ class MultitenancyBindOperator extends BaseOperator {
     const changedOptions = JSON.parse(changeObjectBody.spec.options);
     const instance_guid = _.get(changeObjectBody, 'metadata.labels.instance_guid');
     logger.info(`Triggering unbind of resource: '${this.bindResourceType}' with the following options: '${JSON.stringify(changedOptions)}`);
-    const multitenancyBindService = ServiceType.getService(this.serviceType);
+    const multitenancyBindService = MTServiceFabrik.getService(this.serviceType);
     return multitenancyBindService.createInstance(instance_guid, changedOptions, this.bindResourceType, this.deploymentResourceType)
       .then(multitenancyBindService => multitenancyBindService.unbind(changedOptions))
       .then(response => eventmesh.apiServerClient.updateResource({
